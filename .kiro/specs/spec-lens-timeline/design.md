@@ -9,6 +9,7 @@ SpecLens Timelineは、cc-sddでの開発過程をローカルに記録し、発
 
 ### Goals
 - cc-sdd、Vite、スクリーンショット、検証、意思決定のイベントをローカルタイムラインとして保存・閲覧できる。
+- タイムラインを週単位のページとして閲覧し、前週/次週へ移動しながら開発の流れを追える。
 - ViteのHMRやdev serverイベントを、アプリ価値に直結する観測データとして扱う。
 - `.kiro/specs/`、`.spec-lens/`、`demo-data/spec-lens/`の責務を分離し、仕様文書の肥大化を防ぐ。
 - 初期版はログイン、クラウド同期、完全な過去実行再現、AI採点なしで成立させる。
@@ -105,6 +106,8 @@ src/
 ├── features/
 │   ├── timeline/
 │   │   ├── TimelinePage.tsx
+│   │   ├── TimelineWeekPager.tsx
+│   │   ├── WeekSummaryHeader.tsx
 │   │   ├── TimelineList.tsx
 │   │   ├── TimelineFilters.tsx
 │   │   ├── EventDetailPanel.tsx
@@ -170,6 +173,8 @@ demo-data/
 - `FileWatchRecorder` — `plugins/spec-lens/server/fileWatchRecorder.ts`
 - `RecorderStatusClient` — `plugins/spec-lens/client/hmrClient.ts` and `src/features/recorder-status/RecorderStatusBadge.tsx`
 - `TimelineUI` — `src/features/timeline/*`
+- `TimelineWeekPager` — `src/features/timeline/TimelineWeekPager.tsx`
+- `WeekSummaryHeader` — `src/features/timeline/WeekSummaryHeader.tsx`
 - `CheckUI` — `src/features/checks/*`
 - `DemoDataUI` — `src/features/demo-data/*`
 
@@ -222,9 +227,9 @@ graph TB
 
 | Requirement | Summary | Components | Interfaces | Flows |
 |-------------|---------|------------|------------|-------|
-| 1.1 | タイムライン初期表示 | TimelineUI, TimelineQueryService | Timeline API | Viteイベント記録 |
+| 1.1 | タイムライン初期表示 | TimelineUI, TimelineWeekPager, TimelineQueryService | Timeline API, week query | Viteイベント記録 |
 | 1.2 | 空状態案内 | TimelineUI | UI state |  |
-| 1.3 | 種別フィルタ | TimelineUI, TimelineQueryService | Query params |  |
+| 1.3 | 種別フィルタ | TimelineUI, TimelineWeekPager, TimelineQueryService | Query params, week query |  |
 | 1.4 | イベント詳細 | TimelineUI | TimelineEvent DTO |  |
 | 1.5 | イベント種別表示 | TimelineUI, EventStore | TimelineEvent kind |  |
 | 2.1 | 仕様ファイル更新記録 | FileWatchRecorder, EventStore | File event | Viteイベント記録 |
@@ -262,9 +267,9 @@ graph TB
 | 8.3 | 非対応説明 | AppShell, TimelineUI | unsupported action copy |  |
 | 8.4 | 完全再現非対応説明 | TimelineUI | capability notice |  |
 | 8.5 | 複数repo非対応 | AppShell | scope notice |  |
-| 9.1 | テキスト先行表示 | TimelineUI | lazy image loading |  |
+| 9.1 | テキスト先行表示 | TimelineUI, TimelineWeekPager | weekly pagination, lazy image loading |  |
 | 9.2 | 破損イベント隔離 | EventStore, TimelineUI | corrupt event |  |
-| 9.3 | 検索 | TimelineQueryService, TimelineUI | search query |  |
+| 9.3 | 検索 | TimelineQueryService, TimelineUI, TimelineWeekPager | search query, week query |  |
 | 9.4 | 目印表示 | TimelineUI, EventStore | marker field |  |
 | 9.5 | 現在状態表示 | RecorderStatusClient, TimelineUI | recorder state |  |
 
@@ -278,10 +283,10 @@ graph TB
 | ScreenshotCaptureAgent | Runtime | Playwrightで画面画像を保存する | 4.1, 4.2, 4.4 | Playwright P1, EventStore P0 | Service |
 | RuleCheckEngine | Domain | 仕様とタスクの簡易チェックを生成する | 6.1, 6.2, 6.4 | EventStore P1 | Service |
 | DemoDataManager | Data | ライブ記録から発表用サンプルを作る | 7.1, 7.4, 7.5 | EventStore P0 | Service, Batch |
-| TimelineQueryService | Domain | フィルタ、検索、並び替えを提供する | 1.3, 9.3 | EventStore P0 | Service |
+| TimelineQueryService | Domain | 週単位ページ、フィルタ、検索、並び替えを提供する | 1.1, 1.3, 9.1, 9.3 | EventStore P0 | Service |
 | ViteEventRecorder | Runtime | HMR、reload、errorをイベント化する | 3.1, 3.2, 3.3, 3.4 | Vite P0 | Event |
 | FileWatchRecorder | Runtime | cc-sdd関連ファイル変更をイベント化する | 2.1, 2.2, 2.5 | Vite watcher P1 | Event |
-| TimelineUI | UI | タイムライン閲覧と詳細表示を担う | 1, 4.3, 5.5, 9 | TimelineApiClient P0 | State |
+| TimelineUI | UI | 週単位タイムライン閲覧と詳細表示を担う | 1, 4.3, 5.5, 9 | TimelineApiClient P0 | State |
 | CheckUI | UI | 簡易チェック結果を表示する | 6.1, 6.3, 6.5 | RuleCheckEngine API P0 | State |
 | DemoDataUI | UI | ライブとサンプルデータを切り替える | 7.1, 7.5 | DemoDataManager API P0 | State |
 | RecorderStatusClient | Client | 記録中、停止中、エラー中を表示する | 3.5, 9.5 | Vite WS P1 | Event, State |
@@ -481,7 +486,7 @@ interface EventStore {
 #### TimelineQueryService
 | Field | Detail |
 |-------|--------|
-| Intent | 検索、フィルタ、並び替え、画像lazy load用のDTOを作る |
+| Intent | 週単位ページ、検索、フィルタ、並び替え、画像lazy load用のDTOを作る |
 | Requirements | 1.1, 1.3, 1.4, 9.1, 9.3 |
 
 **Contracts**: Service [x]
@@ -490,11 +495,36 @@ interface EventStore {
 ```typescript
 interface TimelineQueryService {
   search(query: TimelineQuery): Promise<Result<TimelineResponse, QueryError>>;
+  getWeekPage(query: WeekPageQuery): Promise<Result<WeekPageResponse, QueryError>>;
 }
 ```
 - Preconditions: EventStoreが読み取り可能。
-- Postconditions: テキスト情報は画像読み込みを待たずに返す。
-- Invariants: 検索対象はtitle、summary、kind、relatedPaths、taskRef、specRef。
+- Postconditions: 指定週のテキスト情報は画像読み込みを待たずに返す。
+- Invariants: 週の境界はプロジェクトのローカルタイムゾーンで月曜始まりとし、検索対象はtitle、summary、kind、relatedPaths、taskRef、specRef。
+
+##### Week Query Contract
+```typescript
+interface WeekPageQuery {
+  weekStartDate: string;
+  timezone: string;
+  kinds: EventKind[];
+  searchText?: string;
+  markerOnly: boolean;
+  sourceMode: 'live' | 'demo';
+}
+
+interface WeekPageResponse {
+  weekStartDate: string;
+  weekEndDate: string;
+  previousWeekStartDate: string;
+  nextWeekStartDate: string;
+  totalEvents: number;
+  events: EventEnvelope<JsonObject>[];
+  summary: WeekSummary;
+}
+```
+- `weekStartDate`は`YYYY-MM-DD`形式で、UIの前週/次週ナビゲーションとURL stateに使う。
+- `summary`はイベント数、スクリーンショット数、エラー数、チェック失敗数を含む。
 
 #### RuleCheckEngine
 | Field | Detail |
@@ -581,11 +611,13 @@ interface ScreenshotCaptureAgent {
 #### TimelineUI
 | Field | Detail |
 |-------|--------|
-| Intent | タイムライン閲覧、検索、詳細、スクリーンショット表示を提供する |
+| Intent | 週単位のタイムライン閲覧、検索、詳細、スクリーンショット表示を提供する |
 | Requirements | 1.1, 1.2, 1.3, 1.4, 1.5, 4.3, 4.5, 5.5, 8.4, 9.1, 9.2, 9.3, 9.4, 9.5 |
 
 **Implementation Notes**
 - Integration: `timelineApiClient.ts`経由でLocalApiRouterへアクセスする。
+- UX: 初期表示は現在週のページにし、`TimelineWeekPager`で前週/次週へ移動する。週内では発生時刻順にイベントを並べる。
+- UX: `WeekSummaryHeader`で対象週、イベント数、スクリーンショット数、エラー数、チェック失敗数を表示する。
 - Validation: 空状態、画像なし、破損イベント、保存失敗を表示できること。
 - Risks: 画像読み込みでUIが重くならないよう、一覧ではthumbnailまたはlazy loadにする。
 
@@ -653,6 +685,29 @@ erDiagram
 - `marker?: 'presentation' | 'important'`
 - `payload: JsonObject`
 
+**WeekPageQuery**
+- `weekStartDate: string`
+- `timezone: string`
+- `kinds: EventKind[]`
+- `searchText?: string`
+- `markerOnly: boolean`
+- `sourceMode: 'live' | 'demo'`
+
+**WeekPageResponse**
+- `weekStartDate: string`
+- `weekEndDate: string`
+- `previousWeekStartDate: string`
+- `nextWeekStartDate: string`
+- `totalEvents: number`
+- `events: EventEnvelope<JsonObject>[]`
+- `summary: WeekSummary`
+
+**WeekSummary**
+- `eventCount: number`
+- `screenshotCount: number`
+- `errorCount: number`
+- `failedCheckCount: number`
+
 **ScreenshotAsset**
 - `id: string`
 - `eventId: string`
@@ -717,6 +772,7 @@ demo-data/
 ### Unit Tests
 - `EventStore`が正常なNDJSON行を読み込み、破損行を`corrupt`イベントとして返すこと。
 - `TimelineQueryService`がkind、検索語、markerでフィルタできること。
+- `TimelineQueryService`が指定週の開始日から週ページを返し、前週/次週の開始日を計算すること。
 - `RuleCheckEngine`が対象ファイルなしを`skipped`にし、AI採点として扱わないこと。
 - `DemoDataManager`が選択イベントと関連画像だけを`demo-data/spec-lens/`へ分離すること。
 - `TimelineUI`のselectorが画像読み込みを待たずにテキストイベントを返すこと。
@@ -731,6 +787,7 @@ demo-data/
 ### E2E/UI Tests
 - 初回起動時、イベントなしの案内が表示されること。
 - サンプルタイムラインを開くと、ライブ記録と区別されて表示されること。
+- 現在週、前週、次週を移動して、それぞれの週内イベントだけが表示されること。
 - イベント種別フィルタと検索で表示対象が変わること。
 - スクリーンショット付きイベントを選択すると画像プレビューが表示されること。
 - 欠落画像または破損イベントがあっても他イベントを閲覧できること。
@@ -748,7 +805,7 @@ demo-data/
 
 ## Performance & Scalability
 - `events.ndjson`はappend-onlyで実装し、MVPでは単一プロジェクト内のローカル利用に限定する。
-- UIは画像lazy loadとテキスト先行表示で体感遅延を抑える。
+- UIは週単位ページング、画像lazy load、テキスト先行表示で体感遅延を抑える。
 - 大規模化した場合は、イベントcompaction、index file、日付別分割を追加する。
 
 ## Migration Strategy
