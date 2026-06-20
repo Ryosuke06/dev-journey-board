@@ -1,8 +1,8 @@
 # Requirements Document
 
-> **Status:** このrequirementsは2026-06-20時点で保留扱いにする。
-> 現在の方針は、SpecLens Timelineという記録アプリを作ることではなく、別のReact/Viteアプリを作り、その開発過程をcc-sdd、Git、必要なスクリーンショットや開発ログで記録することである。
-> この文書は、将来「開発過程を記録・可視化するアプリ」を作る場合の参考として残す。
+> **Status:** このrequirementsは2026-06-20時点で本命アプリ候補として再採用する。
+> 作るものは、cc-sddでの開発過程を記録して分かりやすく見せるReact/Viteアプリである。
+> 発表では、このアプリ自身をcc-sddで作る過程を題材として紹介する。
 
 ## Introduction
 SpecLens Timelineは、発表者本人がcc-sddでReact/Viteアプリを作る過程を、あとから発表ストーリーとして見返せるローカル開発タイムラインである。
