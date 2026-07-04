@@ -6,6 +6,7 @@ import { createSpecLensDomainFixtures } from '../../../shared/spec-lens/fixtures
 import { createSpecLensPaths, type SpecLensPathContract } from '../../../shared/spec-lens/paths';
 import type { JsonObject, TimelineEvent } from '../../../shared/spec-lens/events';
 import type { Result } from '../../../shared/spec-lens/result';
+import { createEventStore } from './eventStore';
 
 type StorageErrorCode = 'write_failed' | 'read_failed';
 
@@ -34,10 +35,6 @@ interface EventStore {
   getEvent(id: string): Promise<Result<TimelineEvent | null, StorageError>>;
 }
 
-interface EventStoreModule {
-  createEventStore(input: { readonly paths: SpecLensPathContract }): EventStore;
-}
-
 const specName = 'spec-lens-timeline';
 const fixtures = createSpecLensDomainFixtures();
 let temporaryProjectRoots: string[] = [];
@@ -48,12 +45,6 @@ afterEach(async () => {
   );
   temporaryProjectRoots = [];
 });
-
-async function loadEventStore(): Promise<EventStoreModule> {
-  const modulePath = './eventStore';
-
-  return import(/* @vite-ignore */ modulePath) as Promise<EventStoreModule>;
-}
 
 async function createProjectContext(): Promise<{
   readonly projectRoot: string;
@@ -120,8 +111,7 @@ function createUnlinkedDecisionEvent(): TimelineEvent {
 }
 
 describe('EventStore contract', () => {
-  test.fails('イベントをUTF-8 NDJSONとしてappend-onlyで追記する', async () => {
-    const { createEventStore } = await loadEventStore();
+  test('イベントをUTF-8 NDJSONとしてappend-onlyで追記する', async () => {
     const { paths } = await createProjectContext();
     const store = createEventStore({ paths });
 
@@ -146,8 +136,7 @@ describe('EventStore contract', () => {
     });
   });
 
-  test.fails('正常なNDJSON行を発生順のイベントとして読み込む', async () => {
-    const { createEventStore } = await loadEventStore();
+  test('正常なNDJSON行を発生順のイベントとして読み込む', async () => {
     const { paths } = await createProjectContext();
 
     await seedEventLog(paths, [
@@ -170,8 +159,7 @@ describe('EventStore contract', () => {
     expect(singleEventResult.value?.id).toBe(fixtures.eventWithoutScreenshot.id);
   });
 
-  test.fails('破損したNDJSON行をcorruptイベントとして隔離し、読み取れるイベントを返す', async () => {
-    const { createEventStore } = await loadEventStore();
+  test('破損したNDJSON行をcorruptイベントとして隔離し、読み取れるイベントを返す', async () => {
     const { paths } = await createProjectContext();
 
     await seedEventLog(paths, [
@@ -201,8 +189,7 @@ describe('EventStore contract', () => {
     });
   });
 
-  test.fails('ローカル保存先へ書き込めない場合はwrite_failedをResultで返す', async () => {
-    const { createEventStore } = await loadEventStore();
+  test('ローカル保存先へ書き込めない場合はwrite_failedをResultで返す', async () => {
     const { paths, projectRoot } = await createProjectContext();
     const blockedRuntimeRoot = path.join(projectRoot, 'blocked-runtime');
     const blockedPaths: SpecLensPathContract = {
@@ -224,8 +211,7 @@ describe('EventStore contract', () => {
     });
   });
 
-  test.fails('スクリーンショット参照ありイベントを画像本体ではなく参照として保存・読込する', async () => {
-    const { createEventStore } = await loadEventStore();
+  test('スクリーンショット参照ありイベントを画像本体ではなく参照として保存・読込する', async () => {
     const { paths } = await createProjectContext();
     const store = createEventStore({ paths });
 
@@ -244,8 +230,7 @@ describe('EventStore contract', () => {
     expect(contents).not.toContain('![');
   });
 
-  test.fails('仕様やタスクに紐付かないイベントも未紐付けイベントとして保存・読込する', async () => {
-    const { createEventStore } = await loadEventStore();
+  test('仕様やタスクに紐付かないイベントも未紐付けイベントとして保存・読込する', async () => {
     const { paths } = await createProjectContext();
     const unlinkedEvent = createUnlinkedDecisionEvent();
     const store = createEventStore({ paths });
