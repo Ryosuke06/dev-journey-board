@@ -59,6 +59,7 @@
   - _Requirements: 1.1, 1.5, 2.5, 4.5, 5.2, 5.3, 5.5, 9.2, 9.4_
 
 - [ ] 2.3 Red: 週単位ページングと検索のテストを書く
+  - _Blocked: roadmap分割により `spec-lens-query` へ移管予定_
   - **背景:** 発表者は長いログ全体ではなく、週単位で開発の流れを追いたい。
   - **受け入れ条件:** 指定週、前週、次週、発生時刻順、検索語、種別、重要マーカー、live/demoの絞り込みを検証する失敗テストがある。
   - **やらないこと:** TimelineQueryService本体、React画面、HTTP endpoint、画像ファイル読込はまだ実装しない。
@@ -66,6 +67,7 @@
   - _Requirements: 1.1, 1.3, 1.4, 7.1, 7.5, 9.1, 9.3, 9.4_
 
 - [ ] 2.4 Green/Refactor: TimelineQueryServiceを最小実装する
+  - _Blocked: roadmap分割により `spec-lens-query` へ移管予定_
   - **背景:** UIは週単位のDTOを受け取って表示するため、画像読み込みを待たない検索・整形層が必要である。
   - **受け入れ条件:** 2.3のテストが通り、週ページ、前週/次週、週サマリー、検索、フィルタ、重要マーカーが正しい結果を返す。
   - **やらないこと:** React UI、HTTP API、画像実読込はこのタスクでは作らない。
@@ -75,6 +77,7 @@
 - [ ] 3. Viteとcc-sddの記録入口をTDDで作る
 
 - [ ] 3.1 Red: Vite開発イベント変換のテストを書く
+  - _Blocked: roadmap分割により `spec-lens-recording` へ移管予定_
   - **背景:** ViteのHMRやdev serverエラーを発表で見せるには、開発イベントをタイムラインイベントへ正規化する必要がある。
   - **受け入れ条件:** HMR、フルリロード、開発サーバーエラー、duration不明、詳細不足を検証する失敗テストがある。
   - **やらないこと:** Vite plugin登録、EventStore永続化、WebSocket通知はまだ実装しない。
@@ -82,6 +85,7 @@
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
 - [ ] 3.2 Green/Refactor: ViteEventRecorderを最小実装する
+  - _Blocked: roadmap分割により `spec-lens-recording` へ移管予定_
   - **背景:** Redで定義したViteイベント変換を満たし、plugin統合前に変換処理を単独で信頼できる状態にする。
   - **受け入れ条件:** 3.1のテストが通り、`vite_hmr`、`vite_reload`、`vite_error`イベントが生成される。
   - **やらないこと:** dev server統合、UI通知、スクリーンショット連携はこのタスクでは行わない。
@@ -90,6 +94,7 @@
   - _Boundary: ViteEventRecorder_
 
 - [ ] 3.3 Red: cc-sdd関連ファイル変更記録のテストを書く
+  - _Blocked: roadmap分割により `spec-lens-recording` へ移管予定_
   - **背景:** cc-sddの成果物はファイルとして残るため、AIエージェントや人間の作業結果をファイル変更として観測する。
   - **受け入れ条件:** 仕様ファイル更新、タスク状態変更、検証結果、未紐付け変更を分類する失敗テストがある。
   - **やらないこと:** FileWatchRecorder本体、cc-sdd承認フローの代替、AIによる内容評価、Git履歴解析はまだ行わない。
@@ -97,6 +102,7 @@
   - _Requirements: 2.1, 2.2, 2.3, 2.5_
 
 - [ ] 3.4 Green/Refactor: FileWatchRecorderを最小実装する
+  - _Blocked: roadmap分割により `spec-lens-recording` へ移管予定_
   - **背景:** cc-sddの進行をタイムライン化するため、ファイル変更からイベントを作る記録入口が必要である。
   - **受け入れ条件:** 3.3のテストが通り、仕様、設計、タスク、検証、未紐付け変更がイベント化される。
   - **やらないこと:** 実dev server watcher統合、UI表示、意思決定の手動登録はこのタスクでは行わない。
@@ -105,6 +111,7 @@
   - _Boundary: FileWatchRecorder_
 
 - [ ] 3.5 Red: SpecLens Vite plugin統合のテストを書く
+  - _Blocked: roadmap分割により `spec-lens-recording` へ移管予定_
   - **背景:** 開発対象アプリとSpecLensをつなぐ入口は、Vite dev server内で動くpluginである。
   - **受け入れ条件:** dev server登録、HMR hook連携、watcher登録、WebSocket通知、記録停止中の保存抑止を検証する失敗テストがある。
   - **やらないこと:** React画面、capture、check、demo exportはまだ統合しない。
@@ -112,6 +119,7 @@
   - _Requirements: 3.1, 3.5, 8.2, 9.5_
 
 - [ ] 3.6 Green/Refactor: SpecLens Vite pluginを最小実装する
+  - _Blocked: roadmap分割により `spec-lens-recording` へ移管予定_
   - **背景:** Redで定義した統合契約を満たし、dev server内で記録機能が動く状態を作る。
   - **受け入れ条件:** 3.5のテストが通り、HMRとファイル変更がEventStoreへ保存され、記録状態がWebSocketで通知される。
   - **やらないこと:** production server、Vite以外のビルドツール対応、外部ネットワーク送信は実装しない。
@@ -122,6 +130,7 @@
 - [ ] 4. ローカルサービスをTDDで作る
 
 - [ ] 4.1 Red: スクリーンショット保存サービスのテストを書く
+  - _Blocked: roadmap分割により `spec-lens-capture-check` へ移管予定_
   - **背景:** 開発過程を発表で説明するには、文字ログだけでなく画面状態の画像が必要である。
   - **受け入れ条件:** capture成功、Playwright起動失敗、対象URL未設定、画像書き込み失敗、元イベント保持を検証する失敗テストがある。
   - **やらないこと:** Playwright実装、HTTP API、UIプレビュー、動画録画はまだ作らない。
@@ -129,6 +138,7 @@
   - _Requirements: 4.1, 4.2, 4.4, 5.2, 5.5, 9.1_
 
 - [ ] 4.2 Green/Refactor: ScreenshotCaptureAgentを最小実装する
+  - _Blocked: roadmap分割により `spec-lens-capture-check` へ移管予定_
   - **背景:** Redで定義したcapture契約を満たし、成功と失敗の両方をイベントとして扱えるようにする。
   - **受け入れ条件:** 4.1のテストが通り、成功時はPNGと`screenshot`イベント、失敗時は失敗状態と理由が保存される。
   - **やらないこと:** ブラウザ内DOMキャプチャ、動画録画、過去バージョンの完全再実行は実装しない。
@@ -137,6 +147,7 @@
   - _Boundary: ScreenshotCaptureAgent_
 
 - [ ] 4.3 Red: ルールベース簡易チェックのテストを書く
+  - _Blocked: roadmap分割により `spec-lens-capture-check` へ移管予定_
   - **背景:** 発表では、cc-sddの進行が健全だったかを簡単に説明できるチェック結果があると分かりやすい。
   - **受け入れ条件:** 仕様ファイル有無、未完了タスク、検証未実施、対象なしskip、AI採点ではない表示を検証する失敗テストがある。
   - **やらないこと:** RuleCheckEngine本体、外部AI評価、コード品質スコアリングはまだ作らない。
@@ -144,6 +155,7 @@
   - _Requirements: 2.3, 6.1, 6.2, 6.3, 6.4, 6.5_
 
 - [ ] 4.4 Green/Refactor: RuleCheckEngineを最小実装する
+  - _Blocked: roadmap分割により `spec-lens-capture-check` へ移管予定_
   - **背景:** Redで固定した簡易チェックを満たし、発表用に説明可能なチェック結果を生成する。
   - **受け入れ条件:** 4.3のテストが通り、成功、警告、失敗、スキップ、理由、関連パスを持つ`CheckReport`が生成される。
   - **やらないこと:** AI採点、品質スコアリング、外部APIレビューは行わない。
@@ -152,6 +164,7 @@
   - _Boundary: RuleCheckEngine_
 
 - [ ] 4.5 Red: 発表用デモデータ管理のテストを書く
+  - _Blocked: roadmap分割により `spec-lens-demo-data` へ移管予定_
   - **背景:** 発表当日はライブ記録に依存すると不安定なため、固定されたデモタイムラインを分けて持つ必要がある。
   - **受け入れ条件:** 選択イベントexport、関連画像コピー、demo mode読込、画像欠落、ライブ記録非上書きを検証する失敗テストがある。
   - **やらないこと:** DemoDataManager本体、UI切り替え、クラウド配布はまだ実装しない。
@@ -159,6 +172,7 @@
   - _Requirements: 5.4, 7.1, 7.2, 7.3, 7.4, 7.5_
 
 - [ ] 4.6 Green/Refactor: DemoDataManagerを最小実装する
+  - _Blocked: roadmap分割により `spec-lens-demo-data` へ移管予定_
   - **背景:** Redで定義したdemo export/load契約を満たし、発表用固定データをライブ記録と分ける。
   - **受け入れ条件:** 4.5のテストが通り、選択イベントと関連画像を`demo-data/spec-lens/`へ分離し、demo modeで読み込める。
   - **やらないこと:** ライブ記録の上書き、クラウド配布、複数リポジトリのデモ統合は行わない。
@@ -169,6 +183,7 @@
 - [ ] 5. ローカルAPIをTDDで作る
 
 - [ ] 5.1 Red: タイムライン取得と意思決定登録APIのテストを書く
+  - _Blocked: roadmap分割により `spec-lens-local-api` へ移管予定_
   - **背景:** Reactブラウザ画面はローカルファイルを直接読めないため、Vite dev server内のローカルAPI経由でデータを取得する。
   - **受け入れ条件:** 週単位タイムライン取得、検索、フィルタ、重要マーカー、意思決定登録、外部送信なしを検証する失敗テストがある。
   - **やらないこと:** API本体、capture/check/demo endpoint、React UIはまだ実装しない。
@@ -176,6 +191,7 @@
   - _Requirements: 1.1, 1.3, 2.4, 8.2, 9.3, 9.4_
 
 - [ ] 5.2 Green/Refactor: タイムライン取得と意思決定登録APIを最小実装する
+  - _Blocked: roadmap分割により `spec-lens-local-api` へ移管予定_
   - **背景:** Redで固定したAPI契約を満たし、UIが週単位タイムラインと意思決定登録を使える状態にする。
   - **受け入れ条件:** 5.1のテストが通り、UIから週単位タイムライン取得と意思決定イベント追加ができる。
   - **やらないこと:** 認証、外部公開API、共有URL、クラウド同期は実装しない。
@@ -184,6 +200,7 @@
   - _Requirements: 1.1, 1.3, 2.4, 8.2, 9.3, 9.4_
 
 - [ ] 5.3 Red: capture、check、demo export、validation APIのテストを書く
+  - _Blocked: roadmap分割により `spec-lens-local-api` へ移管予定_
   - **背景:** スクリーンショット、簡易チェック、発表用データ作成はUI操作から呼び出す必要がある。
   - **受け入れ条件:** 手動capture、check実行、demo export、不正入力、存在しないevent ID、未設定capture target、任意パス拒否を検証する失敗テストがある。
   - **やらないこと:** API本体、UI操作、実Playwright撮影はまだ実装しない。
@@ -191,6 +208,7 @@
   - _Requirements: 3.4, 4.2, 4.4, 5.4, 5.5, 6.1, 6.3, 7.4, 8.2, 8.3, 8.4, 8.5, 9.2_
 
 - [ ] 5.4 Green/Refactor: capture、check、demo export、validation APIを最小実装する
+  - _Blocked: roadmap分割により `spec-lens-local-api` へ移管予定_
   - **背景:** Redで固定したAPI群を満たし、UIからローカルサービスを安全に呼べる状態にする。
   - **受け入れ条件:** 5.3のテストが通り、capture、check、demo export、validation errorがHTTP API経由で扱える。
   - **やらないこと:** 画像アップロード、外部サービス連携、CORS拡張、任意ディレクトリ書き込み許可は行わない。
@@ -201,6 +219,7 @@
 - [ ] 6. React UIをTDDで作る
 
 - [ ] 6.1 Red: タイムラインAPI clientとselectorのテストを書く
+  - _Blocked: roadmap分割により `spec-lens-ui` へ移管予定_
   - **背景:** UIはserver実装を直接importせず、ローカルAPIと型付きDTOだけを扱う境界を守る必要がある。
   - **受け入れ条件:** API responseから週単位表示、live/demo表示元、検索語、種別、画像遅延読み込み用表示データを生成する失敗テストがある。
   - **やらないこと:** UI component本体、EventStore直接参照、serverファイルのUI importはまだ行わない。
@@ -208,6 +227,7 @@
   - _Requirements: 1.1, 1.3, 4.5, 7.5, 9.1, 9.3_
 
 - [ ] 6.2 Green/Refactor: タイムラインAPI clientとselectorを最小実装する
+  - _Blocked: roadmap分割により `spec-lens-ui` へ移管予定_
   - **背景:** Redで固定したUIデータ境界を満たし、画面コンポーネントが扱いやすい表示データを作る。
   - **受け入れ条件:** 6.1のテストが通り、UI層がAPI responseから週単位の表示データを生成できる。
   - **やらないこと:** 画面レイアウト全体、server実装の直接import、EventStore直接参照は行わない。
@@ -215,6 +235,7 @@
   - _Requirements: 1.1, 1.3, 4.5, 7.5, 9.1, 9.3_
 
 - [ ] 6.3 Red: 週単位タイムライン画面のUIテストを書く
+  - _Blocked: roadmap分割により `spec-lens-ui` へ移管予定_
   - **背景:** ユーザーは開発の流れを1本の長いリストではなく、週単位のページとして見返したい。
   - **受け入れ条件:** 現在週、前週、次週、空状態、検索、種別フィルタ、週サマリー、イベント種別表示を検証する失敗UIテストがある。
   - **やらないこと:** タイムライン画面本体、イベント詳細、スクリーンショットpreviewはまだ実装しない。
@@ -222,6 +243,7 @@
   - _Requirements: 1.1, 1.2, 1.3, 1.5, 9.1, 9.3_
 
 - [ ] 6.4 Green/Refactor: 週単位タイムライン画面を最小実装する
+  - _Blocked: roadmap分割により `spec-lens-ui` へ移管予定_
   - **背景:** Redで固定した閲覧体験を満たし、発表者が週単位で開発の流れを追える画面を作る。
   - **受け入れ条件:** 6.3のUIテストが通り、現在週、前週、次週、空状態、検索、種別フィルタ、週サマリーが操作できる。
   - **やらないこと:** イベント詳細、意思決定登録、demo export操作はこのタスクでは作らない。
@@ -229,6 +251,7 @@
   - _Requirements: 1.1, 1.2, 1.3, 1.5, 9.1, 9.3_
 
 - [ ] 6.5 Red: イベント詳細とスクリーンショット表示のUIテストを書く
+  - _Blocked: roadmap分割により `spec-lens-ui` へ移管予定_
   - **背景:** 発表者はタイムライン上の1イベントを選び、なぜ重要だったかを詳細と画像で説明したい。
   - **受け入れ条件:** 詳細、時刻、種別、関連パス、状態、関連仕様/タスク、画像あり/なし/欠落/保存失敗を検証する失敗UIテストがある。
   - **やらないこと:** 詳細コンポーネント本体、スクリーンショット撮影処理、API endpointはまだ実装しない。
@@ -236,6 +259,7 @@
   - _Requirements: 1.4, 4.3, 4.4, 4.5, 5.5, 7.3, 9.2_
 
 - [ ] 6.6 Green/Refactor: イベント詳細とスクリーンショット表示を最小実装する
+  - _Blocked: roadmap分割により `spec-lens-ui` へ移管予定_
   - **背景:** Redで固定した詳細表示を満たし、画像状態に関係なくイベント詳細を閲覧できるようにする。
   - **受け入れ条件:** 6.5のUIテストが通り、画像あり/なし/欠落/保存失敗でも他イベントの表示が止まらない。
   - **やらないこと:** スクリーンショット撮影処理、週ページ一覧、API endpointはこのタスクでは作らない。
@@ -244,6 +268,7 @@
   - _Boundary: EventDetailPanel, ScreenshotPreview_
 
 - [ ] 6.7 Red: UI操作、チェック、デモ切り替え、記録状態のテストを書く
+  - _Blocked: roadmap分割により `spec-lens-ui` へ移管予定_
   - **背景:** 発表ストーリーには、意思決定、手動capture、重要マーカー、簡易チェック、demo mode、記録状態が必要である。
   - **受け入れ条件:** 意思決定登録、手動capture、重要マーカー、チェック結果表示、demo切り替え、記録状態、非対応範囲説明を検証する失敗UIテストがある。
   - **やらないこと:** 各UI本体、server処理、外部共有、ログイン画面はまだ実装しない。
@@ -251,6 +276,7 @@
   - _Requirements: 2.3, 2.4, 3.5, 4.2, 6.1, 6.3, 6.5, 7.1, 7.2, 7.3, 7.5, 8.1, 8.3, 8.4, 8.5, 9.4, 9.5_
 
 - [ ] 6.8 Green/Refactor: UI操作、チェック、デモ切り替え、記録状態を最小実装する
+  - _Blocked: roadmap分割により `spec-lens-ui` へ移管予定_
   - **背景:** Redで固定した操作群を満たし、発表者がアプリ上で開発ストーリーを扱えるようにする。
   - **受け入れ条件:** 6.7のUIテストが通り、意思決定、手動capture、重要マーカー、チェック、demo切り替え、記録状態、非対応範囲説明が画面上で使える。
   - **やらないこと:** server側の判定ロジック、demo export本体、共有リンク生成、複数repo選択UIは作らない。
@@ -261,6 +287,7 @@
 - [ ] 7. dev server統合とライブ更新をTDDで仕上げる
 
 - [ ] 7.1 Red: Vite設定とローカル導入フローの統合テストを書く
+  - _Blocked: roadmap分割により `spec-lens-integration-hardening` へ移管予定_
   - **背景:** 別のViteアプリに導入する想定では、`vite.config.ts`にpluginを登録して同じdev server上で動くことが重要である。
   - **受け入れ条件:** `npm run dev`相当の起動、React pluginとSpecLens pluginの共存、ローカルAPI base path、外部送信なしを検証する失敗テストまたはsmoke testがある。
   - **やらないこと:** npmパッケージ公開、Next.js対応、production server化はまだ行わない。
@@ -268,6 +295,7 @@
   - _Requirements: 3.5, 8.2, 9.5_
 
 - [ ] 7.2 Green/Refactor: Vite設定にSpecLens pluginとReact UIを統合する
+  - _Blocked: roadmap分割により `spec-lens-integration-hardening` へ移管予定_
   - **背景:** Redで固定した導入フローを満たし、開発対象アプリとSpecLensタイムラインを同じローカル環境で確認できるようにする。
   - **受け入れ条件:** 7.1のテストまたはsmoke testが通り、`npm run dev`でアプリ、plugin、React UI、ローカルAPIが動く。
   - **やらないこと:** npmパッケージ公開、外部サービス連携、production server化は行わない。
@@ -276,6 +304,7 @@
   - _Requirements: 3.5, 8.2, 9.5_
 
 - [ ] 7.3 Red: WebSocketライブ更新の統合テストを書く
+  - _Blocked: roadmap分割により `spec-lens-integration-hardening` へ移管予定_
   - **背景:** 開発中のイベントはリアルタイムに増えるため、画面更新なしでタイムラインへ反映されると体験が分かりやすい。
   - **受け入れ条件:** `spec-lens:recorded`、`spec-lens:status`、`spec-lens:capture-result`、切断時unknown表示を検証する失敗テストがある。
   - **やらないこと:** WebSocket実装、外部WebSocket server、マルチユーザー同期はまだ作らない。
@@ -283,6 +312,7 @@
   - _Requirements: 1.1, 3.5, 4.2, 9.5_
 
 - [ ] 7.4 Green/Refactor: WebSocketで記録イベントと状態をUIへ反映する
+  - _Blocked: roadmap分割により `spec-lens-integration-hardening` へ移管予定_
   - **背景:** Redで固定したライブ更新契約を満たし、新規イベントと状態変化を画面へ反映する。
   - **受け入れ条件:** 7.3のテストが通り、新規イベント、capture結果、記録状態が画面更新なしでUIへ反映される。
   - **やらないこと:** 外部WebSocket server、マルチユーザー同期、高度な再接続戦略は行わない。
@@ -291,6 +321,7 @@
   - _Requirements: 1.1, 3.5, 4.2, 9.5_
 
 - [ ] 7.5 Red: ローカル開発フロー全体のE2Eテストを書く
+  - _Blocked: roadmap分割により `spec-lens-integration-hardening` へ移管予定_
   - **背景:** 個別機能が動いても、cc-sddファイル更新から発表用デモデータまで一連でつながらなければアプリ価値にならない。
   - **受け入れ条件:** cc-sdd更新、Vite HMR、意思決定、手動capture、簡易チェック、demo export、週単位閲覧を通す失敗E2Eテストがある。
   - **やらないこと:** 本番発表の台本作成、マーケティング資料作成、長期運用向けログ圧縮は行わない。
@@ -298,6 +329,7 @@
   - _Requirements: 1.1, 1.4, 2.1, 2.4, 3.1, 4.2, 6.1, 7.4, 9.1, 9.2_
 
 - [ ] 7.6 Green/Refactor: ローカル開発フロー全体を通す
+  - _Blocked: roadmap分割により `spec-lens-integration-hardening` へ移管予定_
   - **背景:** Redで固定したE2Eフローを満たし、発表で見せる一連の体験を動く状態にする。
   - **受け入れ条件:** 7.5のE2Eテストが通り、週単位タイムライン、詳細、画像、チェック、デモ切り替えまで一連で動く。
   - **やらないこと:** 未承認のクラウド、認証、複数repo対応、発表資料作成は行わない。
@@ -308,6 +340,7 @@
 - [ ] 8. TDDの品質ゲートで仕上げる
 
 - [ ] 8.1 Red: パフォーマンスとローカル専用制約の検証を追加する
+  - _Blocked: roadmap分割により `spec-lens-integration-hardening` へ移管予定_
   - **背景:** イベントが増えると一覧が重くなりやすく、ローカル専用ツールとしての安全境界も崩しやすい。
   - **受け入れ条件:** 5,000件イベント、画像一括読み込み防止、CORS非拡張、任意パス書き込み拒否、外部送信なしを検証する失敗テストがある。
   - **やらないこと:** 10,000件超のindex化、ログ圧縮、クラウド監視、production負荷試験は行わない。
@@ -315,6 +348,7 @@
   - _Requirements: 5.3, 8.2, 9.1_
 
 - [ ] 8.2 Green/Refactor: パフォーマンスとローカル専用制約を満たす
+  - _Blocked: roadmap分割により `spec-lens-integration-hardening` へ移管予定_
   - **背景:** Redで固定した安全性と体感速度を満たし、発表中に迷わず操作できる状態にする。
   - **受け入れ条件:** 8.1のテストが通り、5,000件のイベントでもテキスト情報が先に表示され、画像を一覧で一括読み込みしない。
   - **やらないこと:** 将来向けindex化、クラウド監視、production向け負荷最適化は行わない。
@@ -322,6 +356,7 @@
   - _Requirements: 5.3, 8.2, 9.1_
 
 - [ ] 8.3 全TDDサイクルの回帰テストを実行する
+  - _Blocked: roadmap分割により `spec-lens-integration-hardening` へ移管予定_
   - **背景:** TDDでは、最後に全テストを通して既存機能を壊していないことを確認する。
   - **受け入れ条件:** 型チェック、ビルド、単体テスト、統合テスト、E2Eテストが通り、全45受け入れ条件の対応が確認される。
   - **やらないこと:** tasks承認後の追加スコープ、未承認のクラウド/認証/複数repo対応、発表資料作成は行わない。
